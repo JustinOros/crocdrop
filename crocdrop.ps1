@@ -109,7 +109,14 @@ function Start-CrocDrop {
       }
       $doneMsg = 'All done. Your files were sent.'
     } else {
-      $dest = if ($Rest -and $Rest.Count -gt 0) { $Rest[0] } else { Join-Path $env:USERPROFILE 'Downloads\CrocDrop' }
+      $here = (Get-Location).ProviderPath
+      if ($Rest -and $Rest.Count -gt 0) {
+        $dest = $Rest[0]
+      } elseif ($here -ne $env:USERPROFILE -and -not $here.StartsWith($env:windir, [StringComparison]::OrdinalIgnoreCase) -and (Test-Path -LiteralPath $here)) {
+        $dest = $here
+      } else {
+        $dest = Join-Path $env:USERPROFILE 'Downloads\CrocDrop'
+      }
       New-Item -ItemType Directory -Path $dest -Force | Out-Null
       Write-Host ''
       Write-Host "Files will be saved to: $dest"

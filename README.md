@@ -13,7 +13,7 @@ Live site: https://justinoros.github.io/crocdrop/
 1. Open the site and click Receive.
 2. Copy the link and send it to your friend.
 3. Copy the command, paste it into Terminal (Mac, Linux) or PowerShell (Windows), and press Enter.
-4. Files are saved to `Downloads/CrocDrop`.
+4. Files are saved to the folder you ran the command from. If you ran it from your home folder, they go to `Downloads/CrocDrop`.
 
 **Sending**
 
@@ -39,7 +39,7 @@ bash <(curl -fsSL https://justinoros.github.io/crocdrop/crocdrop.sh) receive YOU
 bash <(curl -fsSL https://justinoros.github.io/crocdrop/crocdrop.sh) send YOUR-CODE /path/to/folder
 ```
 
-Optional last argument for receive is the folder to save into.
+You can also add a folder as the last argument of receive to choose where files are saved.
 
 ## Files
 

@@ -144,7 +144,10 @@ if [ "$MODE" = "send" ]; then
   done
   DONE_MSG="All done. Your files were sent."
 else
-  DEST="${1:-$HOME/Downloads/CrocDrop}"
+  DEST="$1"
+  if [ -z "$DEST" ]; then
+    if [ "$PWD" != "$HOME" ] && [ "$PWD" != "/" ]; then DEST="$PWD"; else DEST="$HOME/Downloads/CrocDrop"; fi
+  fi
   mkdir -p "$DEST" || die "could not create $DEST"
   say ""
   say "Files will be saved to: $DEST"
