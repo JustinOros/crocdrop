@@ -30,7 +30,7 @@ Live site: https://justinoros.github.io/crocdrop/
 - The script blocks sleep while it runs.
 - croc is pinned to v11.5.5 and checked against a SHA256 before it runs.
 - The code lives in the part of the link after the `#`, so it is never sent to the website.
-- Nothing is installed system-wide. At the end you can remove the temporary files.
+- Nothing is installed system-wide. At the end you can clean up the small helper program it used. Your transferred files are never touched.
 
 ## Run it directly
 

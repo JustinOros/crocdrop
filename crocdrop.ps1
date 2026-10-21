@@ -135,12 +135,12 @@ function Start-CrocDrop {
     Write-Host ''
     Write-Host $doneMsg
     Write-Host ''
-    $answer = Read-Host 'Remove the temporary CrocDrop files from this computer now? Press Enter for yes, or type n to keep them'
+    $answer = Read-Host 'Your transferred files are safe and will not be touched. Clean up the small helper program CrocDrop used? Press Enter for yes, or type n to keep it'
     if ($answer -match '^(n|no)$') {
       $keep = $true
-      Write-Host "Kept at: $sandbox"
+      Write-Host "Helper program kept at: $sandbox"
     } else {
-      Write-Host 'Removed. Nothing is left behind.'
+      Write-Host 'Cleaned up. Your transferred files were not touched.'
     }
   }
   catch {

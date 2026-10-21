@@ -163,9 +163,9 @@ fi
 say ""
 say "$DONE_MSG"
 say ""
-printf 'Remove the temporary CrocDrop files from this computer now? Press Enter for yes, or type n to keep them: '
+printf 'Your transferred files are safe and will not be touched.\nClean up the small helper program CrocDrop used? Press Enter for yes, or type n to keep it: '
 read -r ANSWER
 case "$ANSWER" in
-  n|N|no|NO) KEEP=1; say "Kept at: $SB" ;;
-  *) say "Removed. Nothing is left behind." ;;
+  n|N|no|NO) KEEP=1; say "Helper program kept at: $SB" ;;
+  *) say "Cleaned up. Your transferred files were not touched." ;;
 esac
