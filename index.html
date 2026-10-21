@@ -99,12 +99,13 @@ h2 { font-size: 22px; margin: 0 0 18px; }
   font-weight: 650;
   padding: 12px 20px;
   border-radius: 10px;
-  border: 0;
+  border: 2px solid var(--accent);
   background: var(--accent);
   color: var(--accent-text);
   cursor: pointer;
 }
-.btn.done { background: var(--muted); }
+.btn.alt { background: transparent; color: var(--accent); margin-left: 8px; }
+.btn.done { background: var(--muted); border-color: var(--muted); color: var(--accent-text); }
 .tabs { display: flex; gap: 6px; margin-bottom: 10px; }
 .tab {
   font: inherit;
@@ -164,13 +165,15 @@ footer a { color: inherit; }
     <div class="step">
       <div class="label"><span class="num">1</span>Send this link to your friend</div>
       <div class="box" id="r-link"></div>
-      <button class="btn" data-copy="r-link">Copy link</button>
+      <button class="btn" data-copy="r-link" data-label="Copy link">Copy link</button>
+      <button class="btn alt" data-copy="r-code" data-label="Copy code">Copy code</button>
+      <p class="hint">Or just send the code: <b id="r-code"></b></p>
     </div>
     <div class="step">
       <div class="label"><span class="num">2</span>Run this on your computer</div>
       <div class="tabs" data-tabs></div>
       <div class="box" id="r-cmd"></div>
-      <button class="btn" data-copy="r-cmd">Copy command</button>
+      <button class="btn" data-copy="r-cmd" data-label="Copy command">Copy command</button>
       <p class="hint" data-how></p>
     </div>
     <div class="note">Files are saved in the folder you run the command from. From your home folder, they go to Downloads, in a folder called CrocDrop. Keep this window open until it says All done. If it stops, run the command again and it picks up where it left off.</div>
@@ -190,7 +193,7 @@ footer a { color: inherit; }
         <div class="label"><span class="num">1</span>Run this on your computer</div>
         <div class="tabs" data-tabs></div>
         <div class="box" id="s-cmd"></div>
-        <button class="btn" data-copy="s-cmd">Copy command</button>
+        <button class="btn" data-copy="s-cmd" data-label="Copy command">Copy command</button>
         <p class="hint" data-how></p>
       </div>
       <div class="step">
@@ -200,7 +203,7 @@ footer a { color: inherit; }
       <details>
         <summary>Does your friend need a link?</summary>
         <div class="box" id="s-friend"></div>
-        <button class="btn" data-copy="s-friend">Copy link</button>
+        <button class="btn" data-copy="s-friend" data-label="Copy link">Copy link</button>
       </details>
     </div>
     <div class="note">Keep this window open until it says All done. If it stops, run the command again and it picks up where it left off.</div>
@@ -293,6 +296,7 @@ function render() {
   const { view, code } = route();
   if (view === "receive" && code) {
     $("r-link").textContent = base + "#send/" + code;
+    $("r-code").textContent = code;
     $("r-cmd").textContent = command("receive", code);
     show("v-receive");
   } else if (view === "send") {
@@ -312,7 +316,7 @@ function render() {
   renderTabs();
   document.querySelectorAll("[data-copy]").forEach((b) => {
     b.classList.remove("done");
-    b.textContent = b.dataset.copy.endsWith("cmd") ? "Copy command" : "Copy link";
+    b.textContent = b.dataset.label;
   });
 }
 
