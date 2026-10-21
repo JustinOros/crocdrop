@@ -1,0 +1,358 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CrocDrop</title>
+<meta name="description" content="Send big files from one computer to another. Nothing to install.">
+<style>
+:root {
+  --bg: #f4f7f4;
+  --card: #ffffff;
+  --text: #16241a;
+  --muted: #5a6b5f;
+  --line: #d9e3da;
+  --accent: #1f8a4c;
+  --accent-text: #ffffff;
+  --code-bg: #0f1b13;
+  --code-text: #d7f5e0;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0c1410;
+    --card: #131e17;
+    --text: #e6f2ea;
+    --muted: #94a89a;
+    --line: #223328;
+    --accent: #34c06f;
+    --accent-text: #05140b;
+    --code-bg: #08100b;
+    --code-text: #c9f2d6;
+  }
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font: 17px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  padding: 24px 16px 48px;
+}
+main { width: 100%; max-width: 620px; }
+header { text-align: center; margin: 24px 0 28px; cursor: pointer; }
+h1 { font-size: 40px; margin: 0; letter-spacing: -0.5px; }
+h1 span { color: var(--accent); }
+.tag { color: var(--muted); margin: 6px 0 0; }
+.card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 24px;
+}
+.big {
+  display: block;
+  width: 100%;
+  font: inherit;
+  font-size: 22px;
+  font-weight: 650;
+  padding: 22px;
+  margin: 0 0 14px;
+  border-radius: 14px;
+  border: 2px solid var(--accent);
+  background: var(--accent);
+  color: var(--accent-text);
+  cursor: pointer;
+}
+.big.alt { background: transparent; color: var(--accent); }
+.big small { display: block; font-size: 15px; font-weight: 400; opacity: 0.85; margin-top: 2px; }
+.big:last-child { margin-bottom: 0; }
+h2 { font-size: 22px; margin: 0 0 18px; }
+.step { margin: 0 0 22px; }
+.step:last-child { margin-bottom: 0; }
+.num {
+  display: inline-block;
+  width: 28px; height: 28px; line-height: 28px;
+  text-align: center;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--accent-text);
+  font-weight: 700;
+  font-size: 15px;
+  margin-right: 8px;
+}
+.label { font-weight: 650; margin-bottom: 10px; }
+.box {
+  background: var(--code-bg);
+  color: var(--code-text);
+  font: 14px/1.45 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  padding: 14px;
+  border-radius: 10px;
+  word-break: break-all;
+  user-select: all;
+  margin-bottom: 10px;
+}
+.btn {
+  font: inherit;
+  font-weight: 650;
+  padding: 12px 20px;
+  border-radius: 10px;
+  border: 0;
+  background: var(--accent);
+  color: var(--accent-text);
+  cursor: pointer;
+}
+.btn.done { background: var(--muted); }
+.tabs { display: flex; gap: 6px; margin-bottom: 10px; }
+.tab {
+  font: inherit;
+  font-size: 14px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+}
+.tab.on { border-color: var(--accent); color: var(--accent); font-weight: 650; }
+.hint { color: var(--muted); font-size: 15px; margin: 10px 0 0; }
+input[type=text] {
+  width: 100%;
+  font: inherit;
+  padding: 14px;
+  border-radius: 10px;
+  border: 2px solid var(--line);
+  background: var(--card);
+  color: var(--text);
+}
+input[type=text]:focus { outline: none; border-color: var(--accent); }
+a.link, button.link {
+  font: inherit;
+  background: none;
+  border: 0;
+  padding: 0;
+  color: var(--accent);
+  text-decoration: underline;
+  cursor: pointer;
+}
+details { margin-top: 22px; border-top: 1px solid var(--line); padding-top: 16px; color: var(--muted); }
+summary { cursor: pointer; }
+details .box { margin-top: 12px; }
+.note { margin-top: 22px; padding: 14px; border-radius: 10px; background: var(--bg); color: var(--muted); font-size: 15px; }
+.mobile { color: #b3261e; font-weight: 650; }
+footer { text-align: center; color: var(--muted); font-size: 14px; margin-top: 24px; }
+footer a { color: inherit; }
+[hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<main>
+  <header id="home-link">
+    <h1>Croc<span>Drop</span></h1>
+    <p class="tag">Send big files from one computer to another.</p>
+  </header>
+
+  <section id="v-home" class="card" hidden>
+    <button class="big" id="go-receive">Receive files<small>Get files from a friend</small></button>
+    <button class="big alt" id="go-send">Send files<small>I have a link or code</small></button>
+  </section>
+
+  <section id="v-receive" class="card" hidden>
+    <h2>Receive files</h2>
+    <div class="step">
+      <div class="label"><span class="num">1</span>Send this link to your friend</div>
+      <div class="box" id="r-link"></div>
+      <button class="btn" data-copy="r-link">Copy link</button>
+    </div>
+    <div class="step">
+      <div class="label"><span class="num">2</span>Run this on your computer</div>
+      <div class="tabs" data-tabs></div>
+      <div class="box" id="r-cmd"></div>
+      <button class="btn" data-copy="r-cmd">Copy command</button>
+      <p class="hint" data-how></p>
+    </div>
+    <div class="note">Files are saved in your Downloads folder, in a folder called CrocDrop. Keep this window open until it says All done. If it stops, run the command again and it picks up where it left off.</div>
+  </section>
+
+  <section id="v-send" class="card" hidden>
+    <h2>Send files</h2>
+    <div id="s-nocode">
+      <div class="step">
+        <div class="label"><span class="num">1</span>Paste the link or code from your friend</div>
+        <input type="text" id="s-input" placeholder="Paste here" autocomplete="off" autocapitalize="off" spellcheck="false">
+        <p class="hint">Going first? <button class="link" id="s-make">Make a code instead</button></p>
+      </div>
+    </div>
+    <div id="s-code" hidden>
+      <div class="step">
+        <div class="label"><span class="num">1</span>Run this on your computer</div>
+        <div class="tabs" data-tabs></div>
+        <div class="box" id="s-cmd"></div>
+        <button class="btn" data-copy="s-cmd">Copy command</button>
+        <p class="hint" data-how></p>
+      </div>
+      <div class="step">
+        <div class="label"><span class="num">2</span>Drag your files or folder into the window</div>
+        <p class="hint" style="margin-top:0">When it asks, drag what you want to send into that window and press Enter. Or just press Enter to browse for a folder.</p>
+      </div>
+      <details>
+        <summary>Does your friend need a link?</summary>
+        <div class="box" id="s-friend"></div>
+        <button class="btn" data-copy="s-friend">Copy link</button>
+      </details>
+    </div>
+    <div class="note">Keep this window open until it says All done. If it stops, run the command again and it picks up where it left off.</div>
+  </section>
+
+  <section id="v-mobile" class="card" hidden>
+    <p class="mobile">CrocDrop needs a computer (Mac, Windows or Linux).</p>
+    <p>Open this page on your computer to continue.</p>
+  </section>
+
+  <footer>
+    Files go straight between the two computers, encrypted. This page never sees your files or your code.<br>
+    Powered by <a href="https://github.com/schollz/croc">croc</a>.
+  </footer>
+</main>
+
+<script>
+const WORDS = "apple angel arrow atlas autumn bacon badge baker basil beach bear berry bike bird bison blade bloom boat bold bolt book boots brave bread brick bridge brook brush cabin cactus cake camel candle canoe canyon cargo castle cedar chalk charm cherry chess chief cider circus citrus clay cliff clock cloud clover coast cobra cocoa comet coral cotton crane creek crown crystal daisy dance delta desert diamond dingo dolphin dragon dream drift drum eagle earth echo elm ember engine falcon fern field finch flame flint forest fox frost galaxy garden garlic gecko giant ginger glacier globe goose grape gravel grove guitar harbor hawk hazel heron hill honey horizon hotel iceberg igloo island ivory jade jaguar jelly jungle kayak kernel kettle kiwi koala ladder lagoon lamp lantern lark lava lemon lilac lily lime lion lotus lunar magnet mango maple marble meadow melon mint mirror monkey moon moss mountain mule nectar needle nest noodle north oasis ocean olive onion orange orbit otter owl oyster paddle palm panda paper parrot peach pearl pebble pepper piano pine pixel planet plum polar pond poppy puffin pumpkin puzzle quail quartz rabbit radar rain raven reef ribbon river robin rocket rose saddle safari sage sailor salmon sand satin scout shadow shell silver sketch sky slate snow solar spark spice spider spruce squid star stone storm sugar summer sunset swan tango tea thunder tiger timber toast tomato tulip tundra turtle umbrella valley velvet violet walnut water willow window winter wolf yacht yellow zebra zephyr".split(" ");
+
+const OS_LABELS = { mac: "Mac", windows: "Windows", linux: "Linux" };
+const HOWTO = {
+  mac: "Open Terminal (press Command and Space, type Terminal, press Enter). Paste, then press Enter.",
+  windows: "Open PowerShell (press the Windows key, type PowerShell, press Enter). Right-click to paste, then press Enter.",
+  linux: "Open a terminal. Paste, then press Enter."
+};
+
+const $ = (id) => document.getElementById(id);
+const base = location.origin + location.pathname.replace(/[^/]*$/, "");
+
+let os = detectOS();
+
+function detectOS() {
+  const ua = navigator.userAgent;
+  if (/Android|iPhone|iPod/i.test(ua)) return "mobile";
+  if (/iPad/i.test(ua) || (/Macintosh/i.test(ua) && navigator.maxTouchPoints > 1)) return "mobile";
+  if (/Windows/i.test(ua)) return "windows";
+  if (/Mac/i.test(ua)) return "mac";
+  return "linux";
+}
+
+function makeCode() {
+  const a = new Uint32Array(5);
+  crypto.getRandomValues(a);
+  const words = [0, 1, 2, 3].map((i) => WORDS[a[i] % WORDS.length]);
+  return words.join("-") + "-" + (100 + (a[4] % 900));
+}
+
+function parseCode(text) {
+  let t = (text || "").trim().toLowerCase();
+  const h = t.indexOf("#");
+  if (h >= 0) t = t.slice(h + 1);
+  t = t.replace(/^(send|receive)\//, "");
+  return /^[a-z0-9]+(-[a-z0-9]+)+$/.test(t) && t.length >= 6 ? t : "";
+}
+
+function command(mode, code) {
+  if (os === "windows") {
+    return "& ([scriptblock]::Create((New-Object Net.WebClient).DownloadString('" + base + "crocdrop.ps1'))) " + mode + " '" + code + "'";
+  }
+  return "bash <(curl -fsSL " + base + "crocdrop.sh) " + mode + " " + code;
+}
+
+function route() {
+  const m = location.hash.replace(/^#/, "").split("/");
+  const view = m[0];
+  const code = parseCode(m[1] || "");
+  return { view, code };
+}
+
+function show(id) {
+  ["v-home", "v-receive", "v-send", "v-mobile"].forEach((v) => { $(v).hidden = v !== id; });
+}
+
+function renderTabs() {
+  document.querySelectorAll("[data-tabs]").forEach((el) => {
+    el.innerHTML = "";
+    Object.keys(OS_LABELS).forEach((k) => {
+      const b = document.createElement("button");
+      b.className = "tab" + (k === os ? " on" : "");
+      b.textContent = OS_LABELS[k];
+      b.onclick = () => { os = k; render(); };
+      el.appendChild(b);
+    });
+  });
+  document.querySelectorAll("[data-how]").forEach((el) => { el.textContent = HOWTO[os]; });
+}
+
+function render() {
+  if (os === "mobile") { show("v-mobile"); return; }
+  const { view, code } = route();
+  if (view === "receive" && code) {
+    $("r-link").textContent = base + "#send/" + code;
+    $("r-cmd").textContent = command("receive", code);
+    show("v-receive");
+  } else if (view === "send") {
+    if (code) {
+      $("s-cmd").textContent = command("send", code);
+      $("s-friend").textContent = base + "#receive/" + code;
+      $("s-nocode").hidden = true;
+      $("s-code").hidden = false;
+    } else {
+      $("s-nocode").hidden = false;
+      $("s-code").hidden = true;
+    }
+    show("v-send");
+  } else {
+    show("v-home");
+  }
+  renderTabs();
+  document.querySelectorAll("[data-copy]").forEach((b) => {
+    b.classList.remove("done");
+    b.textContent = b.dataset.copy.endsWith("cmd") ? "Copy command" : "Copy link";
+  });
+}
+
+async function copyText(text) {
+  try {
+    await navigator.clipboard.writeText(text);
+    return true;
+  } catch (e) {
+    const t = document.createElement("textarea");
+    t.value = text;
+    t.style.position = "fixed";
+    t.style.opacity = "0";
+    document.body.appendChild(t);
+    t.select();
+    let ok = false;
+    try { ok = document.execCommand("copy"); } catch (e2) { ok = false; }
+    document.body.removeChild(t);
+    return ok;
+  }
+}
+
+document.querySelectorAll("[data-copy]").forEach((b) => {
+  b.onclick = async () => {
+    const ok = await copyText($(b.dataset.copy).textContent);
+    b.textContent = ok ? "Copied" : "Press Ctrl+C to copy";
+    b.classList.add("done");
+  };
+});
+
+$("go-receive").onclick = () => { location.hash = "receive/" + makeCode(); };
+$("go-send").onclick = () => { location.hash = "send"; };
+$("s-make").onclick = () => { location.hash = "send/" + makeCode(); };
+$("home-link").onclick = () => { history.pushState("", document.title, location.pathname); render(); };
+$("s-input").oninput = (e) => {
+  const c = parseCode(e.target.value);
+  if (c) location.hash = "send/" + c;
+};
+
+window.addEventListener("hashchange", render);
+render();
+</script>
+</body>
+</html>
