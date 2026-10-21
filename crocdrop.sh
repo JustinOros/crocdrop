@@ -81,6 +81,9 @@ tar -xzf "$ARCHIVE" -C "$SB/bin" || die "could not unpack"
 CROC="$SB/bin/croc"
 chmod +x "$CROC"
 
+EXTRA=($CROCDROP_FLAGS)
+SEND_EXTRA=($CROCDROP_SEND_FLAGS)
+
 INHIBIT=()
 if [ "$(uname -s)" = "Darwin" ]; then
   INHIBIT=(caffeinate -i)
@@ -139,7 +142,7 @@ if [ "$MODE" = "send" ]; then
   say ""
   say "Waiting for your friend to connect. Keep this window open."
   while true; do
-    env HOME="$SB/home" XDG_CONFIG_HOME="$SB/cfg" CROC_SECRET="$CODE" "${INHIBIT[@]}" "$CROC" --ignore-stdin --disable-clipboard send "${ITEMS[@]}" && break
+    env HOME="$SB/home" XDG_CONFIG_HOME="$SB/cfg" CROC_SECRET="$CODE" "${INHIBIT[@]}" "$CROC" --ignore-stdin --disable-clipboard "${EXTRA[@]}" send "${SEND_EXTRA[@]}" "${ITEMS[@]}" && break
     retry_note
   done
   DONE_MSG="All done. Your files were sent."
@@ -153,7 +156,7 @@ else
   say "Files will be saved to: $DEST"
   say "Waiting for your friend to send. Keep this window open."
   while true; do
-    env HOME="$SB/home" XDG_CONFIG_HOME="$SB/cfg" CROC_SECRET="$CODE" "${INHIBIT[@]}" "$CROC" --yes --overwrite --disable-clipboard --out "$DEST" && break
+    env HOME="$SB/home" XDG_CONFIG_HOME="$SB/cfg" CROC_SECRET="$CODE" "${INHIBIT[@]}" "$CROC" --yes --overwrite --disable-clipboard "${EXTRA[@]}" --out "$DEST" && break
     retry_note
   done
   DONE_MSG="All done. Your files are in: $DEST"

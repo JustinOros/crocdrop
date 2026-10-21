@@ -56,6 +56,10 @@ function Start-CrocDrop {
     if (-not (Test-Path $exe)) { Write-Host 'Could not unpack the download.'; return }
 
     $env:APPDATA = Join-Path $sandbox 'cfg'
+    $extra = @()
+    if ($env:CROCDROP_FLAGS) { $extra = @($env:CROCDROP_FLAGS -split '\s+' | Where-Object { $_ }) }
+    $sendExtra = @()
+    if ($env:CROCDROP_SEND_FLAGS) { $sendExtra = @($env:CROCDROP_SEND_FLAGS -split '\s+' | Where-Object { $_ }) }
 
     if (-not ('CrocDrop.Power' -as [type])) {
       Add-Type -Namespace CrocDrop -Name Power -MemberDefinition '[DllImport("kernel32.dll")] public static extern uint SetThreadExecutionState(uint f);'
@@ -101,7 +105,7 @@ function Start-CrocDrop {
       Write-Host 'Waiting for your friend to connect. Keep this window open.'
       $env:CROC_SECRET = $Code
       while ($true) {
-        & $exe --ignore-stdin --disable-clipboard send @items
+        & $exe --ignore-stdin --disable-clipboard @extra send @sendExtra @items
         if ($LASTEXITCODE -eq 0) { break }
         Write-Host ''
         Write-Host 'Waiting to connect. Keep this window open. (Press Ctrl+C to stop)'
@@ -122,7 +126,7 @@ function Start-CrocDrop {
       Write-Host "Files will be saved to: $dest"
       Write-Host 'Waiting for your friend to send. Keep this window open.'
       while ($true) {
-        & $exe --yes --overwrite --disable-clipboard --out $dest $Code
+        & $exe --yes --overwrite --disable-clipboard @extra --out $dest $Code
         if ($LASTEXITCODE -eq 0) { break }
         Write-Host ''
         Write-Host 'Waiting to connect. Keep this window open. (Press Ctrl+C to stop)'

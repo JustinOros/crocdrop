@@ -41,6 +41,24 @@ bash <(curl -fsSL https://justinoros.github.io/crocdrop/crocdrop.sh) send YOUR-C
 
 You can also add a folder as the last argument of receive to choose where files are saved.
 
+## Advanced
+
+Set `CROCDROP_FLAGS` to pass extra croc options on both sides, for example `--no-compress` or `--relay your-server:9009`. Set `CROCDROP_SEND_FLAGS` for options that only apply when sending, such as `--transport relay`.
+
+Mac and Linux:
+
+```
+CROCDROP_FLAGS="--no-compress" bash <(curl -fsSL https://justinoros.github.io/crocdrop/crocdrop.sh) receive YOUR-CODE
+```
+
+Windows PowerShell:
+
+```
+$env:CROCDROP_FLAGS = "--no-compress"
+```
+
+Then paste the normal command in the same window.
+
 ## Files
 
 - `index.html` the web page
