@@ -110,6 +110,24 @@ retry_note() {
   sleep 5
 }
 
+wait_for_paths() {
+  SHOWN=0
+  while true; do
+    GONE=""
+    for P in "$@"; do
+      [ -e "$P" ] || GONE="$P"
+    done
+    [ -z "$GONE" ] && return
+    if [ "$SHOWN" -eq 0 ]; then
+      say ""
+      say "Cannot find: $GONE"
+      say "If it is on an external drive, make sure the drive is plugged in. Waiting for it to come back..."
+      SHOWN=1
+    fi
+    sleep 3
+  done
+}
+
 if [ "$MODE" = "send" ]; then
   ITEMS=()
   if [ $# -gt 0 ]; then
@@ -139,6 +157,7 @@ if [ "$MODE" = "send" ]; then
   say ""
   say "Waiting for your friend to connect. Keep this window open."
   while true; do
+    wait_for_paths "${ITEMS[@]}"
     env HOME="$SB/home" XDG_CONFIG_HOME="$SB/cfg" CROC_SECRET="$CODE" "${INHIBIT[@]}" "$CROC" --ignore-stdin --disable-clipboard send "${ITEMS[@]}" && break
     retry_note
   done
@@ -153,6 +172,7 @@ else
   say "Files will be saved to: $DEST"
   say "Waiting for your friend to send. Keep this window open."
   while true; do
+    wait_for_paths "$DEST"
     env HOME="$SB/home" XDG_CONFIG_HOME="$SB/cfg" CROC_SECRET="$CODE" "${INHIBIT[@]}" "$CROC" --yes --overwrite --disable-clipboard --out "$DEST" && break
     retry_note
   done

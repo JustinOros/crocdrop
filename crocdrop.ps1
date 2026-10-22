@@ -31,6 +31,25 @@ function Start-CrocDrop {
   }
   if (-not $asset) { Write-Host 'This computer type is not supported.'; return }
 
+  function Wait-ForPaths {
+    param([string[]]$Targets)
+    $shown = $false
+    while ($true) {
+      $gone = $null
+      foreach ($t in $Targets) {
+        if (-not (Test-Path -LiteralPath $t)) { $gone = $t }
+      }
+      if (-not $gone) { return }
+      if (-not $shown) {
+        Write-Host ''
+        Write-Host "Cannot find: $gone"
+        Write-Host 'If it is on an external drive, make sure the drive is plugged in. Waiting for it to come back...'
+        $shown = $true
+      }
+      Start-Sleep -Seconds 3
+    }
+  }
+
   $sandbox = Join-Path ([IO.Path]::GetTempPath()) ('crocdrop-' + [Guid]::NewGuid().ToString('N').Substring(0, 8))
   $keep = $false
   $oldAppData = $env:APPDATA
@@ -101,6 +120,7 @@ function Start-CrocDrop {
       Write-Host 'Waiting for your friend to connect. Keep this window open.'
       $env:CROC_SECRET = $Code
       while ($true) {
+        Wait-ForPaths $items
         & $exe --ignore-stdin --disable-clipboard send @items
         if ($LASTEXITCODE -eq 0) { break }
         Write-Host ''
@@ -122,6 +142,7 @@ function Start-CrocDrop {
       Write-Host "Files will be saved to: $dest"
       Write-Host 'Waiting for your friend to send. Keep this window open.'
       while ($true) {
+        Wait-ForPaths @($dest)
         & $exe --yes --overwrite --disable-clipboard --out $dest $Code
         if ($LASTEXITCODE -eq 0) { break }
         Write-Host ''
